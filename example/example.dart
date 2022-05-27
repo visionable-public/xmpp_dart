@@ -54,9 +54,7 @@ class ExampleConnectionStateChangedListener implements xmpp.ConnectionStateChang
       Log.d(TAG, 'Connected');
       var vCardManager = xmpp.VCardManager(_connection);
       vCardManager.getSelfVCard().then((vCard) {
-        if (vCard != null) {
-          Log.d(TAG, 'Your info' + vCard.buildXmlString());
-        }
+        Log.d(TAG, 'Your info' + vCard.buildXmlString());
       });
       var messageHandler = xmpp.MessageHandler.getInstance(_connection);
       var rosterManager = xmpp.RosterManager.getInstance(_connection);
@@ -71,12 +69,10 @@ class ExampleConnectionStateChangedListener implements xmpp.ConnectionStateChang
       });
       sleep(const Duration(seconds: 1));
       vCardManager.getVCardFor(receiverJid).then((vCard) {
-        if (vCard != null) {
-          Log.d(TAG, 'Receiver info' + vCard.buildXmlString());
-          if (vCard != null && vCard.image != null) {
-            var file = File('test456789.jpg')..writeAsBytesSync(image.encodeJpg(vCard.image!));
-            Log.d(TAG, 'IMAGE SAVED TO: ${file.path}');
-          }
+        Log.d(TAG, 'Receiver info' + vCard.buildXmlString());
+        if (vCard.image != null) {
+          var file = File('test456789.jpg')..writeAsBytesSync(image.encodeJpg(vCard.image!));
+          Log.d(TAG, 'IMAGE SAVED TO: ${file.path}');
         }
       });
       var presenceManager = xmpp.PresenceManager.getInstance(_connection);
@@ -101,8 +97,10 @@ class ExampleMessagesListener implements xmpp.MessagesListener {
   @override
   void onNewMessage(xmpp.MessageStanza? message) {
     if (message!.body != null) {
-      Log.d(TAG, format(
-          'New Message from {color.blue}${message.fromJid!.userAtDomain}{color.end} message: {color.red}${message.body}{color.end}'));
+      Log.d(
+          TAG,
+          format(
+              'New Message from {color.blue}${message.fromJid!.userAtDomain}{color.end} message: {color.red}${message.body}{color.end}'));
     }
   }
 }

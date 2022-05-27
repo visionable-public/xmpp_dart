@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:xmpp_stone/src/Connection.dart';
 import 'package:xmpp_stone/src/chat/Chat.dart';
+import 'package:xmpp_stone/src/chat/Message.dart';
 import 'package:xmpp_stone/src/data/Jid.dart';
-import 'package:xmpp_stone/xmpp_stone.dart';
+import 'package:xmpp_stone/src/elements/stanzas/MessageStanza.dart';
 
 class ChatManager {
   static Map<Connection, ChatManager> instances = {};

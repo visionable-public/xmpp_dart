@@ -1,8 +1,4 @@
-import 'dart:async';
 import 'dart:io';
-
-import 'package:xmpp_stone/xmpp_stone.dart';
-import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
 class MockSocket extends Mock implements Socket {}
