@@ -1,7 +1,7 @@
 import 'package:xml/xml.dart';
 
-import '../XmppAttribute.dart';
-import '../XmppElement.dart';
+import '../xmpp_attribute.dart';
+import '../xmpp_element.dart';
 import '../../data/privacy_list_item.dart';
 import '../../utils/string_utils.dart';
 
@@ -25,22 +25,22 @@ class PrivacyListItemElement extends XmppElement {
 
     var controlStanzas = <PrivacyControlStanza>[];
 
-    element.children.forEach((element) {
+    for (var element in element.children) {
       switch (element.name) {
         case 'message':
-          controlStanzas.add(PrivacyControlStanza.MESSAGE);
+          controlStanzas.add(PrivacyControlStanza.message);
           break;
         case 'iq':
-          controlStanzas.add(PrivacyControlStanza.IQ);
+          controlStanzas.add(PrivacyControlStanza.iq);
           break;
         case 'presence-in':
-          controlStanzas.add(PrivacyControlStanza.PRESENCE_IN);
+          controlStanzas.add(PrivacyControlStanza.presenceIn);
           break;
         case 'presence-out':
-          controlStanzas.add(PrivacyControlStanza.PRESENCE_OUT);
+          controlStanzas.add(PrivacyControlStanza.presenceOut);
           break;
       }
-    });
+    }
 
     item = PrivacyListItem(
         type: type,

@@ -2,21 +2,21 @@ import 'dart:async';
 
 import 'package:tuple/tuple.dart';
 
-import '../../Connection.dart';
+import '../../connection.dart';
 import '../../data/privacy_list.dart';
 import '../../data/privacy_list_item.dart';
 import '../../data/privacy_lists.dart';
-import '../../elements/XmppElement.dart';
-import '../../elements/forms/QueryElement.dart';
+import '../../elements/xmpp_element.dart';
+import '../../elements/forms/query_element.dart';
 import '../../elements/privacy_lists/active_element.dart';
 import '../../elements/privacy_lists/default_element.dart';
 import '../../elements/privacy_lists/list_element.dart';
 import '../../elements/privacy_lists/privacy_list_item_element.dart';
-import '../../elements/stanzas/AbstractStanza.dart';
-import '../../elements/stanzas/IqStanza.dart';
-import '../../features/servicediscovery/ServiceDiscoveryNegotiator.dart';
+import '../../elements/stanzas/abstract_stanza.dart';
+import '../../elements/stanzas/iq_stanza.dart';
+import '../../features/servicediscovery/service_discovery_negotiator.dart';
 
-const feature_not_supported_error =
+const kFeatureNotSupportedError =
     'The "Privacy Lists" feature not supported by your server';
 
 class PrivacyListsManager {
@@ -50,7 +50,7 @@ class PrivacyListsManager {
     if (stanza is IqStanza) {
       var unrespondedStanza = _unrespondedStanzas[stanza.id];
       if (unrespondedStanza != null) {
-        if (stanza.type == IqStanzaType.ERROR) {
+        if (stanza.type == IqStanzaType.error) {
           var errorElement = stanza.getChild('error');
           var errorType = errorElement?.attributes
               .firstWhere((xmppAttribute) => xmppAttribute.name == 'type')
@@ -66,7 +66,7 @@ class PrivacyListsManager {
         _unrespondedStanzas.remove(stanza.id);
       } else {
         //TODO unchecked part cause test server doesn't support this part, check and fix if need on alive server
-        if (stanza.type == IqStanzaType.SET && stanza.id != null) {
+        if (stanza.type == IqStanzaType.set && stanza.id != null) {
           if (stanza.getChild('query') != null) {
             var queryElement = stanza.getChild('query');
             var listElement = queryElement?.getChild('list');
@@ -92,12 +92,12 @@ class PrivacyListsManager {
 
   Future<PrivacyLists> getAllLists() {
     if (!isPrivacyListsSupported()) {
-      return Future.error(Exception(feature_not_supported_error));
+      return Future.error(Exception(kFeatureNotSupportedError));
     }
 
     var completer = Completer<PrivacyLists>();
 
-    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.GET)
+    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.get)
       ..fromJid = _connection.fullJid;
 
     var queryStanza = QueryElement();
@@ -108,7 +108,7 @@ class PrivacyListsManager {
       var result = PrivacyLists()..allPrivacyLists = [];
 
       var queryElement = resultStanza.getChild('query');
-      queryElement?.children.forEach((listElement) {
+      for (var listElement in queryElement?.children ?? []) {
         if (listElement.name == 'active') {
           result.activeList = listElement.getAttribute('name')?.value;
         } else if (listElement.name == 'default') {
@@ -117,7 +117,7 @@ class PrivacyListsManager {
           result.allPrivacyLists!
               .add(listElement.getAttribute('name')?.value ?? 'unknown');
         }
-      });
+      }
 
       return result;
     }, completer);
@@ -129,12 +129,12 @@ class PrivacyListsManager {
 
   Future<List<PrivacyListItem>> getListByName(String name) {
     if (!isPrivacyListsSupported()) {
-      return Future.error(Exception(feature_not_supported_error));
+      return Future.error(Exception(kFeatureNotSupportedError));
     }
 
     var completer = Completer<List<PrivacyListItem>>();
 
-    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.GET)
+    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.get)
       ..fromJid = _connection.fullJid;
 
     var queryStanza = QueryElement();
@@ -146,9 +146,9 @@ class PrivacyListsManager {
       var result = <PrivacyListItem>[];
 
       var queryElement = resultStanza.getChild('query');
-      queryElement?.children.first.children.forEach((listElement) {
+      for (var listElement in queryElement?.children.first.children ?? []) {
         result.add(PrivacyListItemElement.fromXml(listElement).item);
-      });
+      }
 
       return result;
     }, completer);
@@ -160,12 +160,12 @@ class PrivacyListsManager {
 
   Future<void> setActiveList(String name) {
     if (!isPrivacyListsSupported()) {
-      return Future.error(Exception(feature_not_supported_error));
+      return Future.error(Exception(kFeatureNotSupportedError));
     }
 
     var completer = Completer<void>();
 
-    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.SET)
+    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.set)
       ..fromJid = _connection.fullJid;
 
     var queryStanza = QueryElement();
@@ -184,12 +184,12 @@ class PrivacyListsManager {
 
   Future<void> declineActiveList() {
     if (!isPrivacyListsSupported()) {
-      return Future.error(Exception(feature_not_supported_error));
+      return Future.error(Exception(kFeatureNotSupportedError));
     }
 
     var completer = Completer<void>();
 
-    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.SET)
+    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.set)
       ..fromJid = _connection.fullJid;
 
     var queryStanza = QueryElement();
@@ -208,12 +208,12 @@ class PrivacyListsManager {
 
   Future<void> setDefaultList(String name) {
     if (!isPrivacyListsSupported()) {
-      return Future.error(Exception(feature_not_supported_error));
+      return Future.error(Exception(kFeatureNotSupportedError));
     }
 
     var completer = Completer<void>();
 
-    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.SET)
+    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.set)
       ..fromJid = _connection.fullJid;
 
     var queryStanza = QueryElement();
@@ -232,12 +232,12 @@ class PrivacyListsManager {
 
   Future<void> declineDefaultList() {
     if (!isPrivacyListsSupported()) {
-      return Future.error(Exception(feature_not_supported_error));
+      return Future.error(Exception(kFeatureNotSupportedError));
     }
 
     var completer = Completer<void>();
 
-    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.SET)
+    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.set)
       ..fromJid = _connection.fullJid;
 
     var queryStanza = QueryElement();
@@ -256,12 +256,12 @@ class PrivacyListsManager {
 
   Future<void> createPrivacyList(PrivacyList privacyList) {
     if (!isPrivacyListsSupported()) {
-      return Future.error(Exception(feature_not_supported_error));
+      return Future.error(Exception(kFeatureNotSupportedError));
     }
 
     var completer = Completer<void>();
 
-    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.SET)
+    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.set)
       ..fromJid = _connection.fullJid;
 
     var queryStanza = QueryElement();
@@ -288,12 +288,12 @@ class PrivacyListsManager {
 
   Future<void> removePrivacyList(String name) {
     if (!isPrivacyListsSupported()) {
-      return Future.error(Exception(feature_not_supported_error));
+      return Future.error(Exception(kFeatureNotSupportedError));
     }
 
     var completer = Completer<void>();
 
-    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.SET)
+    var iqStanza = IqStanza(AbstractStanza.getRandomId(), IqStanzaType.set)
       ..fromJid = _connection.fullJid;
 
     var queryStanza = QueryElement();
@@ -316,7 +316,7 @@ class PrivacyListsManager {
   }
 
   void _sendResultToServer(String id) {
-    var resultStanza = IqStanza(id, IqStanzaType.RESULT)
+    var resultStanza = IqStanza(id, IqStanzaType.result)
       ..fromJid = _connection.fullJid;
 
     _connection.writeStanza(resultStanza);

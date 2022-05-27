@@ -14,7 +14,7 @@ class PrivacyListItem {
   }) : controlStanzas = controlStanzas ?? [];
 }
 
-enum PrivacyType { JID, GROUP, SUBSCRIPTION }
-enum PrivacyAction { ALLOW, DENY }
-enum PrivacySubscriptionType { BOTH, TO, FROM }
-enum PrivacyControlStanza { MESSAGE, IQ, PRESENCE_IN, PRESENCE_OUT }
+enum PrivacyType { jid, group, subscription }
+enum PrivacyAction { allow, deny }
+enum PrivacySubscriptionType { both, to, from }
+enum PrivacyControlStanza { message, iq, presenceIn, presenceOut }

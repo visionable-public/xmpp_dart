@@ -1,4 +1,4 @@
-import '../XmppElement.dart';
+import '../xmpp_element.dart';
 import 'named_element.dart';
 
 class ListElement extends NamedElement {
@@ -8,9 +8,9 @@ class ListElement extends NamedElement {
   }
 
   void setItems(List<XmppElement> items) {
-    items.forEach((element) {
+    for (var element in items) {
       addChild(element);
-    });
+    }
   }
 
   void addItem(XmppElement item) {

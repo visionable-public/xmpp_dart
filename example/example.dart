@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:xmpp_stone/src/logger/Log.dart';
+import 'package:xmpp_stone/src/logger/log.dart';
 import 'package:xmpp_stone/xmpp_stone.dart' as xmpp;
 import 'package:universal_io/io.dart';
 import 'package:console/console.dart';
 import 'package:image/image.dart' as image;
 
-final String TAG = 'example';
+final String kTAG = 'example';
 
 void main(List<String> arguments) {
-  Log.logLevel = LogLevel.DEBUG;
+  Log.logLevel = LogLevel.debug;
   Log.logXmpp = false;
-  Log.d(TAG, 'Type user@domain:');
+  Log.d(kTAG, 'Type user@domain:');
   var userAtDomain = 'nemanja@127.0.0.1';
-  Log.d(TAG, 'Type password');
+  Log.d(kTAG, 'Type password');
   var password = '1';
   var jid = xmpp.Jid.fromFullJid(userAtDomain);
   var account = xmpp.XmppAccountSettings(userAtDomain, jid.local, jid.domain, password, 5222, resource: 'xmppstone');
@@ -23,8 +23,8 @@ void main(List<String> arguments) {
   ExampleConnectionStateChangedListener(connection, messagesListener);
   var presenceManager = xmpp.PresenceManager.getInstance(connection);
   presenceManager.subscriptionStream.listen((streamEvent) {
-    if (streamEvent.type == xmpp.SubscriptionEventType.REQUEST) {
-      Log.d(TAG, 'Accepting presence request');
+    if (streamEvent.type == xmpp.SubscriptionEventType.request) {
+      Log.d(kTAG, 'Accepting presence request');
       presenceManager.acceptSubscription(streamEvent.jid);
     }
   });
@@ -50,11 +50,11 @@ class ExampleConnectionStateChangedListener implements xmpp.ConnectionStateChang
 
   @override
   void onConnectionStateChanged(xmpp.XmppConnectionState state) {
-    if (state == xmpp.XmppConnectionState.Ready) {
-      Log.d(TAG, 'Connected');
+    if (state == xmpp.XmppConnectionState.ready) {
+      Log.d(kTAG, 'Connected');
       var vCardManager = xmpp.VCardManager(_connection);
       vCardManager.getSelfVCard().then((vCard) {
-        Log.d(TAG, 'Your info' + vCard.buildXmlString());
+        Log.d(kTAG, 'Your info${vCard.buildXmlString()}');
       });
       var messageHandler = xmpp.MessageHandler.getInstance(_connection);
       var rosterManager = xmpp.RosterManager.getInstance(_connection);
@@ -64,15 +64,15 @@ class ExampleConnectionStateChangedListener implements xmpp.ConnectionStateChang
       var receiverJid = xmpp.Jid.fromFullJid(receiver);
       rosterManager.addRosterItem(xmpp.Buddy(receiverJid)).then((result) {
         if (result.description != null) {
-          Log.d(TAG, 'add roster' + result.description!);
+          Log.d(kTAG, 'add roster${result.description!}');
         }
       });
       sleep(const Duration(seconds: 1));
       vCardManager.getVCardFor(receiverJid).then((vCard) {
-        Log.d(TAG, 'Receiver info' + vCard.buildXmlString());
+        Log.d(kTAG, 'Receiver info${vCard.buildXmlString()}');
         if (vCard.image != null) {
           var file = File('test456789.jpg')..writeAsBytesSync(image.encodeJpg(vCard.image!));
-          Log.d(TAG, 'IMAGE SAVED TO: ${file.path}');
+          Log.d(kTAG, 'IMAGE SAVED TO: ${file.path}');
         }
       });
       var presenceManager = xmpp.PresenceManager.getInstance(_connection);
@@ -81,7 +81,7 @@ class ExampleConnectionStateChangedListener implements xmpp.ConnectionStateChang
   }
 
   void onPresence(xmpp.PresenceData event) {
-    Log.d(TAG, 'presence Event from ' + event.jid!.fullJid! + ' PRESENCE: ' + event.showElement.toString());
+    Log.d(kTAG, 'presence Event from ${event.jid!.fullJid!} PRESENCE: ${event.showElement}');
   }
 }
 
@@ -98,7 +98,7 @@ class ExampleMessagesListener implements xmpp.MessagesListener {
   void onNewMessage(xmpp.MessageStanza? message) {
     if (message!.body != null) {
       Log.d(
-          TAG,
+          kTAG,
           format(
               'New Message from {color.blue}${message.fromJid!.userAtDomain}{color.end} message: {color.red}${message.body}{color.end}'));
     }

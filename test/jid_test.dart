@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:xmpp_stone/src/data/Jid.dart';
+import 'package:xmpp_stone/src/data/jid.dart';
 
 void main() {
   group('JID parsing tests', () {
