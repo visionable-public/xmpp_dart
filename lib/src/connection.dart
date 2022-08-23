@@ -11,7 +11,6 @@ import 'package:xmpp_stone/src/features/connection_negotatior_manager.dart';
 import 'package:xmpp_stone/src/features/servicediscovery/carbons_negotiator.dart';
 import 'package:xmpp_stone/src/features/servicediscovery/mam_negotiator.dart';
 import 'package:xmpp_stone/src/features/servicediscovery/service_discovery_negotiator.dart';
-import 'package:xmpp_stone/src/features/streammanagement/stream_managment_module.dart';
 import 'package:xmpp_stone/src/parser/stanza_parser.dart';
 import 'package:xmpp_stone/xmpp_stone.dart';
 

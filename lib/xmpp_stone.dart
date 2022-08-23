@@ -30,3 +30,4 @@ export 'src/presence/presence_manager.dart';
 export 'src/roster/buddy.dart';
 export 'src/roster/roster_manager.dart';
 export 'src/utils/string_utils.dart';
+export 'src/features/streammanagement/stream_managment_module.dart';
